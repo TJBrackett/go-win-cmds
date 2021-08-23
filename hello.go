@@ -116,10 +116,16 @@ func SystemInfo(raw_output string) string {
 	return (raw_output)
 }
 func Users(raw_output string) string {
-	str_split := strings.Split(raw_output, "\n")
+	str_split := strings.Split(raw_output, " ")
 
-	for i := 0; i < len(str_split); i++ {
-		fmt.Println(str_split[i])
+	for i := 1; i < len(str_split)-1; i++ {
+		if str_split[i] != "" && str_split[0] == "Name" {
+			fmt.Println(str_split[i])
+			// struct array push username @ i
+		} else if str_split[i] != "" && str_split[0] == "SID" {
+			fmt.Println(str_split[i])
+			// struct array push id @ i
+		}
 	}
 
 	return (str_split[0])
@@ -131,4 +137,11 @@ func Apps(raw_output string) string {
 func Services(raw_output string) string {
 	fmt.Println("10")
 	return (raw_output)
+}
+
+func FormatArray(c string) {
+	f := func(c rune) bool {
+		return c == ','
+	}
+	fmt.Printf("Fields are: %q", strings.FieldsFunc("a,,b,c", f))
 }
