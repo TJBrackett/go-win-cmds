@@ -15,6 +15,10 @@ type winCmds struct {
 	cmd      string
 }
 
+type Host struct {
+	Hostname string `ecs:"hostname"`
+}
+
 type cmdMap map[string]interface{}
 
 var cmdNames = cmdMap{}
