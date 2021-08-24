@@ -15,11 +15,21 @@ type winCmds struct {
 	cmd      string
 }
 
+type Host struct {
+	User_List []User
+}
+
+type User struct {
+	username string
+	id       string
+}
+
 type cmdMap map[string]interface{}
 
 var cmdNames = cmdMap{}
 
 func main() {
+	userList := []User{}
 	var cmdList = []winCmds{
 		// {
 		// 	name:     "SystemInfo",
@@ -80,11 +90,27 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		// splitStr := strings.Split(string(output), ",")
-		// fmt.Println(splitStr[0])
+
+		switch cmdList[i].name {
+		case "Users":
+			str_split := strings.Split(string(output), " ")
+
+			for i := 1; i < len(str_split)-1; i++ {
+				if str_split[i] != "" && str_split[0] == "Name" {
+					userList = append(userList, User{"username", str_split[i]})
+					fmt.Println(userList)
+				} else if str_split[i] != "" && str_split[0] == "SID" {
+					userList = append(userList, User{"id", str_split[i]})
+					fmt.Println(str_split[i])
+				}
+			}
+			for j := 0; j < len(userList); j++ {
+				fmt.Println(userList[j])
+			}
+		}
+
 		testCall, _ := CallFunc(cmdList[i].name, string(output))
-		var printCall string
-		printCall = testCall.(string)
+		printCall := testCall
 		fmt.Println(printCall)
 	}
 
@@ -116,19 +142,19 @@ func SystemInfo(raw_output string) string {
 	return (raw_output)
 }
 func Users(raw_output string) string {
-	str_split := strings.Split(raw_output, " ")
+	// str_split := strings.Split(raw_output, " ")
 
-	for i := 1; i < len(str_split)-1; i++ {
-		if str_split[i] != "" && str_split[0] == "Name" {
-			fmt.Println(str_split[i])
-			// struct array push username @ i
-		} else if str_split[i] != "" && str_split[0] == "SID" {
-			fmt.Println(str_split[i])
-			// struct array push id @ i
-		}
-	}
-
-	return (str_split[0])
+	// for i := 1; i < len(str_split)-1; i++ {
+	// 	if str_split[i] != "" && str_split[0] == "Name" {
+	// 		// user_struct.username = str_split[i]
+	// 		fmt.Println(str_split[i])
+	// 		// struct array push username @ i
+	// 	} else if str_split[i] != "" && str_split[0] == "SID" {
+	// 		fmt.Println(str_split[i])
+	// 		// struct array push id @ i
+	// 	}
+	// }
+	return ("")
 }
 func Apps(raw_output string) string {
 	fmt.Println("9")
