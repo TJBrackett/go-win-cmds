@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"reflect"
 	"strings"
+/* 	"os"
+	"io" */
 )
 
 type winCmds struct {
@@ -16,7 +18,8 @@ type winCmds struct {
 }
 
 type Host struct {
-	Hostname string `ecs:"hostname"`
+	Hostname string
+	ID string 
 }
 
 type cmdMap map[string]interface{}
@@ -24,6 +27,7 @@ type cmdMap map[string]interface{}
 var cmdNames = cmdMap{}
 
 func main() {
+	host := []Host
 	var cmdList = []winCmds{
 		// {
 		// 	name:     "SystemInfo",
@@ -121,11 +125,17 @@ func SystemInfo(raw_output string) string {
 }
 func Users(raw_output string) string {
 	str_split := strings.Split(raw_output, " ")
+	// m := make(map[string]string)
 
 	for i := 1; i < len(str_split)-1; i++ {
 		if str_split[i] != "" && str_split[0] == "Name" {
-			fmt.Println(str_split[i])
-			// struct array push username @ i
+			d.Hostname = str_split[i]
+			fmt.Println(d.Hostname)
+			// fmt.Println(fmt.Sprintf("ecs:%d", str_split[i]))
+			// m["Hostname"] = str_split[i]
+			// fmt.Println(m)
+			// response := fmt.Sprint("ecs:" , str_split[i], " ")
+			// io.WriteString(os.Stdout, response)
 		} else if str_split[i] != "" && str_split[0] == "SID" {
 			fmt.Println(str_split[i])
 			// struct array push id @ i
