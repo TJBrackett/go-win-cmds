@@ -12,7 +12,7 @@ type winCmds struct {
 	cmd  string
 }
 
-type Host struct {
+type CMDB struct {
 	User_List []UserStruct
 }
 
@@ -28,7 +28,8 @@ type ReturnData struct {
 }
 
 func main() {
-	userList := UserStruct{}
+	// cmdb := CMDB{}
+	userList := make([]UserStruct, 5)
 	var cmdList = []winCmds{
 		// {
 		// 	name:     "SystemInfo",
@@ -77,7 +78,7 @@ func main() {
 
 	for i := 0; i < len(cmdList); i++ {
 		output, err := exec.Command("cmd", "/c", cmdList[i].cmd).Output()
-		// var tmpData string
+
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -85,18 +86,17 @@ func main() {
 		switch cmdList[i].name {
 		case "Users":
 			tmpData := Users(string(output))
-			// jsonTest, _ := json.Marshal(tmpData)
-			// fmt.Println(tmpData)
+
 			for i, data := range tmpData {
-				fmt.Printf("%-v", data)
-				if data.key == "Home" {
-					// fmt.Println("test")
+				if data.key == "Name" {
+					userList[i].username = data.value
+				} else if data.key == "SID" {
+					userList[i].id = data.value
 				}
-				userList = UserStruct{username: data.value}
-				userList = UserStruct{id: data.value}
-				fmt.Println(data)
-				fmt.Println(userList.username)
+
 			}
+			fmt.Println(userList[0].username)
+			fmt.Println(userList[0].id)
 		}
 	}
 }
