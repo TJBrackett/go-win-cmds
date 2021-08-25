@@ -22,7 +22,6 @@ type UserStruct struct {
 }
 
 type ReturnData struct {
-	index int
 	key   string
 	value string
 }
@@ -113,11 +112,11 @@ func Users(raw_output string) []ReturnData {
 		str_split[i] = strings.Trim(string(str_split[i]), " \r")
 
 		if str_split[i] != "" && str_split[0] == "Name" && i > 0 {
-			jsonData := ReturnData{i, str_split[0], instance}
+			jsonData := ReturnData{str_split[0], instance}
 			tmpData = append(tmpData, jsonData)
 
 		} else if str_split[i] != "" && str_split[0] == "SID" && i > 0 {
-			jsonData := ReturnData{i, str_split[0], instance}
+			jsonData := ReturnData{str_split[0], instance}
 			tmpData = append(tmpData, jsonData)
 
 		}
