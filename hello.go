@@ -1,18 +1,15 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os/exec"
-	"reflect"
 	"strings"
 )
 
 type winCmds struct {
-	name     string
-	funcName interface{}
-	cmd      string
+	name string
+	cmd  string
 }
 
 type Host struct {
@@ -24,12 +21,8 @@ type User struct {
 	id       string
 }
 
-type cmdMap map[string]interface{}
-
-var cmdNames = cmdMap{}
-
 func main() {
-	userList := []User{}
+	// userList := []User{}
 	var cmdList = []winCmds{
 		// {
 		// 	name:     "SystemInfo",
@@ -57,14 +50,12 @@ func main() {
 		// 	cmd:      "wmic nic",
 		// },
 		{
-			name:     "Users",
-			funcName: Users,
-			cmd:      "wmic useraccount get name",
+			name: "Users",
+			cmd:  "wmic useraccount get name",
 		},
 		{
-			name:     "Users",
-			funcName: Users,
-			cmd:      "wmic useraccount get sid",
+			name: "Users",
+			cmd:  "wmic useraccount get sid",
 		},
 		// {
 		// 	name:     "Apps",
@@ -78,12 +69,6 @@ func main() {
 		// },
 	}
 
-	cmdNames = map[string]interface{}{}
-
-	for _, v := range cmdList {
-		MapCmdNames(v.name, v.funcName)
-	}
-
 	for i := 0; i < len(cmdList); i++ {
 		output, err := exec.Command("cmd", "/c", cmdList[i].cmd).Output()
 
@@ -93,48 +78,10 @@ func main() {
 
 		switch cmdList[i].name {
 		case "Users":
-			str_split := strings.Split(string(output), " ")
-
-			for i := 1; i < len(str_split)-1; i++ {
-				if str_split[i] != "" && str_split[0] == "Name" {
-					userList = append(userList, User{"username", str_split[i]})
-					fmt.Println(userList)
-				} else if str_split[i] != "" && str_split[0] == "SID" {
-					userList = append(userList, User{"id", str_split[i]})
-					fmt.Println(str_split[i])
-				}
-			}
-			for j := 0; j < len(userList); j++ {
-				fmt.Println(userList[j])
-			}
+			Users(string(output))
+			fmt.Println(string(output))
 		}
-
-		testCall, _ := CallFunc(cmdList[i].name, string(output))
-		printCall := testCall
-		fmt.Println(printCall)
 	}
-
-	// fmt.Println(runtime.GOOS)
-}
-
-func MapCmdNames(name string, funcName interface{}) {
-	cmdNames[name] = funcName
-}
-
-func CallFunc(funcName string, params ...interface{}) (result interface{}, err error) {
-	f := reflect.ValueOf(cmdNames[funcName])
-	if len(params) != f.Type().NumIn() {
-		err = errors.New("The number of params is out of index.")
-		return
-	}
-	in := make([]reflect.Value, len(params))
-	for k, param := range params {
-		in[k] = reflect.ValueOf(param)
-	}
-	var res []reflect.Value
-	res = f.Call(in)
-	result = res[0].Interface()
-	return
 }
 
 func SystemInfo(raw_output string) string {
@@ -142,18 +89,18 @@ func SystemInfo(raw_output string) string {
 	return (raw_output)
 }
 func Users(raw_output string) string {
-	// str_split := strings.Split(raw_output, " ")
-
-	// for i := 1; i < len(str_split)-1; i++ {
-	// 	if str_split[i] != "" && str_split[0] == "Name" {
-	// 		// user_struct.username = str_split[i]
-	// 		fmt.Println(str_split[i])
-	// 		// struct array push username @ i
-	// 	} else if str_split[i] != "" && str_split[0] == "SID" {
-	// 		fmt.Println(str_split[i])
-	// 		// struct array push id @ i
-	// 	}
-	// }
+	str_split := strings.Split(raw_output, "\r\n")
+	fmt.Println(str_split)
+	for i := 1; i < len(str_split)-1; i++ {
+		// str_split[i] = str_split[i].Trim(str_split[i], "\r\n")
+		if str_split[0] == "Name" {
+			fmt.Println(str_split)
+			// userList = append(userList, User{"username:", str_split[i]})
+		} else if str_split[i] != "" && str_split[0] == "SID" {
+			// userList = append(userList, User{"id:", str_split[i]})
+			fmt.Println(str_split[i])
+		}
+	}
 	return ("")
 }
 func Apps(raw_output string) string {
@@ -163,11 +110,4 @@ func Apps(raw_output string) string {
 func Services(raw_output string) string {
 	fmt.Println("10")
 	return (raw_output)
-}
-
-func FormatArray(c string) {
-	f := func(c rune) bool {
-		return c == ','
-	}
-	fmt.Printf("Fields are: %q", strings.FieldsFunc("a,,b,c", f))
 }
