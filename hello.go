@@ -21,6 +21,12 @@ type UserStruct struct {
 	id       string
 }
 
+type ReturnData struct {
+	index int
+	key   string
+	value string
+}
+
 func main() {
 	userList := UserStruct{}
 	var cmdList = []winCmds{
@@ -79,9 +85,18 @@ func main() {
 		switch cmdList[i].name {
 		case "Users":
 			tmpData := Users(string(output))
-			// fmt.Println(output)
-			userList = UserStruct{username: tmpData}
-			fmt.Println(userList.username)
+			// jsonTest, _ := json.Marshal(tmpData)
+			// fmt.Println(tmpData)
+			for i, data := range tmpData {
+				fmt.Printf("%-v", data)
+				if data.key == "Home" {
+					// fmt.Println("test")
+				}
+				userList = UserStruct{username: data.value}
+				userList = UserStruct{id: data.value}
+				fmt.Println(data)
+				fmt.Println(userList.username)
+			}
 		}
 	}
 }
@@ -90,19 +105,24 @@ func SystemInfo(raw_output string) string {
 	fmt.Println("0")
 	return (raw_output)
 }
-func Users(raw_output string) string {
+func Users(raw_output string) []ReturnData {
 	str_split := strings.Split(raw_output, "\r\n")
-	// var tmpData []string
+	var tmpData []ReturnData
+
 	for i, instance := range str_split {
 		str_split[i] = strings.Trim(string(str_split[i]), " \r")
+
 		if str_split[i] != "" && str_split[0] == "Name" && i > 0 {
-			// append(tmpData, {""})
-			return (instance)
+			jsonData := ReturnData{i, str_split[0], instance}
+			tmpData = append(tmpData, jsonData)
+
 		} else if str_split[i] != "" && str_split[0] == "SID" && i > 0 {
-			fmt.Println(instance)
+			jsonData := ReturnData{i, str_split[0], instance}
+			tmpData = append(tmpData, jsonData)
+
 		}
 	}
-	return ("")
+	return (tmpData)
 }
 func Apps(raw_output string) string {
 	fmt.Println("9")
