@@ -71,7 +71,7 @@ func main() {
 
 	for i := 0; i < len(cmdList); i++ {
 		output, err := exec.Command("cmd", "/c", cmdList[i].cmd).Output()
-
+		// var tmpData string
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -79,7 +79,8 @@ func main() {
 		switch cmdList[i].name {
 		case "Users":
 			Users(string(output))
-			fmt.Println(string(output))
+			// tmpData = append(tmpData, str_split[i])
+			// fmt.Println(string(output))
 		}
 	}
 }
@@ -90,18 +91,27 @@ func SystemInfo(raw_output string) string {
 }
 func Users(raw_output string) string {
 	str_split := strings.Split(raw_output, "\r\n")
-	fmt.Println(str_split)
-	for i := 1; i < len(str_split)-1; i++ {
-		// str_split[i] = str_split[i].Trim(str_split[i], "\r\n")
-		if str_split[0] == "Name" {
-			fmt.Println(str_split)
-			// userList = append(userList, User{"username:", str_split[i]})
-		} else if str_split[i] != "" && str_split[0] == "SID" {
-			// userList = append(userList, User{"id:", str_split[i]})
-			fmt.Println(str_split[i])
+	// returnData := {
+	// 	index: "",
+	// },
+
+	// fmt.Printf("%-v", str_split)
+	// for i := 1; i < len(str_split)-1; i++ {
+	// 	if str_split[0] == "Name" {
+	// 		// returnData = str_split[i]
+	// 	} else if str_split[i] != "" && str_split[0] == "SID" {
+	// 		// returnData = str_split[i]
+	// 	}
+	// }
+	for i, instance := range str_split {
+		str_split[i] = strings.Trim(string(str_split[i]), " \r")
+		if str_split[i] != "" && str_split[0] == "Name" && i > 0 {
+			fmt.Println(instance)
+		} else if str_split[i] != "" && str_split[0] == "SID" && i > 0 {
+			fmt.Println(instance)
 		}
 	}
-	return ("")
+	return ("test")
 }
 func Apps(raw_output string) string {
 	fmt.Println("9")
