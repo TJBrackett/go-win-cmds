@@ -6,7 +6,6 @@ import (
 	"log"
 	"os/exec"
 	"reflect"
-	"strings"
 )
 
 type winCmds struct {
@@ -174,17 +173,8 @@ func Disks(raw_output string) string {
 	return (raw_output)
 }
 func Users(raw_output string) string {
-	str_split := strings.Split(raw_output, "\n")
-
-	for i := 0; i < len(str_split); i++ {
-		fmt.Println(str_split[i])
-	}
-	if str_split[0] == "Name" {
-		class.obj.key = str_split[i]
-	} else {
-		class.obj.value = str_split[i]
-	}
-	return (str_split[0])
+	fmt.Println("8")
+	return (raw_output)
 }
 func Apps(raw_output string) string {
 	fmt.Println("9")

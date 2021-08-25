@@ -13,16 +13,16 @@ type winCmds struct {
 }
 
 type Host struct {
-	User_List []User
+	User_List []UserStruct
 }
 
-type User struct {
+type UserStruct struct {
 	username string
 	id       string
 }
 
 func main() {
-	// userList := []User{}
+	userList := UserStruct{}
 	var cmdList = []winCmds{
 		// {
 		// 	name:     "SystemInfo",
@@ -78,9 +78,10 @@ func main() {
 
 		switch cmdList[i].name {
 		case "Users":
-			Users(string(output))
-			// tmpData = append(tmpData, str_split[i])
-			// fmt.Println(string(output))
+			tmpData := Users(string(output))
+			// fmt.Println(output)
+			userList = UserStruct{username: tmpData}
+			fmt.Println(userList.username)
 		}
 	}
 }
@@ -91,27 +92,17 @@ func SystemInfo(raw_output string) string {
 }
 func Users(raw_output string) string {
 	str_split := strings.Split(raw_output, "\r\n")
-	// returnData := {
-	// 	index: "",
-	// },
-
-	// fmt.Printf("%-v", str_split)
-	// for i := 1; i < len(str_split)-1; i++ {
-	// 	if str_split[0] == "Name" {
-	// 		// returnData = str_split[i]
-	// 	} else if str_split[i] != "" && str_split[0] == "SID" {
-	// 		// returnData = str_split[i]
-	// 	}
-	// }
+	// var tmpData []string
 	for i, instance := range str_split {
 		str_split[i] = strings.Trim(string(str_split[i]), " \r")
 		if str_split[i] != "" && str_split[0] == "Name" && i > 0 {
-			fmt.Println(instance)
+			// append(tmpData, {""})
+			return (instance)
 		} else if str_split[i] != "" && str_split[0] == "SID" && i > 0 {
 			fmt.Println(instance)
 		}
 	}
-	return ("test")
+	return ("")
 }
 func Apps(raw_output string) string {
 	fmt.Println("9")
