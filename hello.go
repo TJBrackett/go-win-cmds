@@ -97,8 +97,10 @@ func Users(rawOutput string) []UserStruct {
 			if instance != "" {
 				splitInstance := strings.Split(instance, ",")
 
-				tmpUserData[i].username = splitInstance[1]
-				tmpUserData[i].id = splitInstance[2]
+				if splitInstance[1] != "Name" {
+					tmpUserData[i].username = splitInstance[1]
+					tmpUserData[i].id = splitInstance[2]
+				}
 				// fmt.Printf("Username: %v\nSID: %v\n", splitInstance[1], splitInstance[2])
 			}
 		}
