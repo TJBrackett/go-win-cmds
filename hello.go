@@ -21,11 +21,6 @@ type UserStruct struct {
 	id       string
 }
 
-type ReturnData struct {
-	key   string
-	value string
-}
-
 func main() {
 	// cmdb := CMDB{}
 	userList := []UserStruct{}
@@ -81,21 +76,10 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		// fmt.Println(string(output))
 		switch cmdList[i].name {
 		case "Users":
 			userList = Users(string(output))
-			// fmt.Printf("%+q\r\n", userList)
-			// Users(string(output))
-			// for i, data := range tmpData {
-			// 	if data.key == "Name" {
-			// 		userList[i].username = data.value
-			// 	} else if data.key == "SID" {
-			// 		userList[i].id = data.value
-			// 	}
-			// 	fmt.Println(userList[0].username)
-			// 	fmt.Println(userList[0].id)
-			// }
+			fmt.Printf("%+q\r\n", userList)
 		}
 	}
 }
@@ -120,23 +104,6 @@ func Users(rawOutput string) []UserStruct {
 		}
 	}
 	return (tmpUserData)
-	// str_split := strings.Split(raw_output, "\r\n")
-	// var tmpData []ReturnData
-	// fmt.Println(str_split)
-	// for i, instance := range str_split {
-	// 	str_split[i] = strings.Trim(string(str_split[i]), " \r\t")
-	// 	fmt.Println(str_split[i])
-
-	// 	if str_split[i] != "" && str_split[0] == "Name" && i > 0 {
-	// 		jsonData := ReturnData{str_split[0], instance}
-	// 		tmpData = append(tmpData, jsonData)
-
-	// 	} else if str_split[i] != "" && str_split[0] == "SID" && i > 0 {
-	// 		jsonData := ReturnData{str_split[0], instance}
-	// 		tmpData = append(tmpData, jsonData)
-
-	// 	}
-	// }
 }
 func Apps(raw_output string) string {
 	fmt.Println("9")
