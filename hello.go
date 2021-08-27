@@ -13,7 +13,10 @@ type winCmds struct {
 }
 
 type CMDB struct {
-	User_List []UserStruct
+	UserList    []UserStruct
+	AppsList    []AppsStruct
+	SvcList     []SvcStruct
+	PatchesList []PatchesStruct
 }
 
 type UserStruct struct {
@@ -43,11 +46,7 @@ type PatchesStruct struct {
 }
 
 func main() {
-	// cmdb := CMDB{}
-	userList := []UserStruct{}
-	appsList := []AppsStruct{}
-	svcList := []SvcStruct{}
-	patchesList := []PatchesStruct{}
+	cmdb := CMDB{}
 	var cmdList = []winCmds{
 		// {
 		// 	name:     "SystemInfo",
@@ -100,17 +99,17 @@ func main() {
 
 		switch cmdList[i].name {
 		case "Users":
-			userList = Users(string(output))
-			fmt.Printf("%+q\r\n", userList)
+			cmdb.UserList = Users(string(output))
+			fmt.Printf("%+q\r\n", cmdb.UserList)
 		case "Apps":
-			appsList = Apps(string(output))
-			fmt.Printf("%+q\r\n", appsList)
+			cmdb.AppsList = Apps(string(output))
+			fmt.Printf("%+q\r\n", cmdb.AppsList)
 		case "Services":
-			svcList = Services(string(output))
-			fmt.Printf("%+q\r\n", svcList)
+			cmdb.SvcList = Services(string(output))
+			fmt.Printf("%+q\r\n", cmdb.SvcList)
 		case "Patches":
-			patchesList = Patches(string(output))
-			fmt.Printf("%+q\r\n", patchesList)
+			cmdb.PatchesList = Patches(string(output))
+			fmt.Printf("%+q\r\n", cmdb.PatchesList)
 		}
 	}
 }
