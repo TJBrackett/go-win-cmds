@@ -28,7 +28,7 @@ type ReturnData struct {
 
 func main() {
 	// cmdb := CMDB{}
-	userList := make([]UserStruct, 5)
+	userList := []UserStruct{}
 	var cmdList = []winCmds{
 		// {
 		// 	name:     "SystemInfo",
@@ -57,12 +57,12 @@ func main() {
 		// },
 		{
 			name: "Users",
-			cmd:  "wmic useraccount get name",
+			cmd:  "wmic useraccount get name,sid /format:csv",
 		},
-		{
-			name: "Users",
-			cmd:  "wmic useraccount get sid",
-		},
+		// {
+		// 	name: "Users",
+		// 	cmd:  "wmic useraccount get sid",
+		// },
 		// {
 		// 	name:     "Apps",
 		// 	funcName: Apps,
@@ -81,21 +81,21 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		// fmt.Println(string(output))
 		switch cmdList[i].name {
 		case "Users":
-			tmpData := Users(string(output))
-
-			for i, data := range tmpData {
-				if data.key == "Name" {
-					userList[i].username = data.value
-				} else if data.key == "SID" {
-					userList[i].id = data.value
-				}
-
-			}
-			fmt.Println(userList[0].username)
-			fmt.Println(userList[0].id)
+			userList = Users(string(output))
+			// fmt.Printf("%+q\r\n", userList)
+			// Users(string(output))
+			// for i, data := range tmpData {
+			// 	if data.key == "Name" {
+			// 		userList[i].username = data.value
+			// 	} else if data.key == "SID" {
+			// 		userList[i].id = data.value
+			// 	}
+			// 	fmt.Println(userList[0].username)
+			// 	fmt.Println(userList[0].id)
+			// }
 		}
 	}
 }
@@ -104,24 +104,39 @@ func SystemInfo(raw_output string) string {
 	fmt.Println("0")
 	return (raw_output)
 }
-func Users(raw_output string) []ReturnData {
-	str_split := strings.Split(raw_output, "\r\n")
-	var tmpData []ReturnData
+func Users(rawOutput string) []UserStruct {
+	strSplit := strings.Split(rawOutput, "\r\n")
+	tmpUserData := make([]UserStruct, len(strSplit))
 
-	for i, instance := range str_split {
-		str_split[i] = strings.Trim(string(str_split[i]), " \r")
+	for i, instance := range strSplit {
+		if i != 0 {
+			if instance != "" {
+				splitInstance := strings.Split(instance, ",")
 
-		if str_split[i] != "" && str_split[0] == "Name" && i > 0 {
-			jsonData := ReturnData{str_split[0], instance}
-			tmpData = append(tmpData, jsonData)
-
-		} else if str_split[i] != "" && str_split[0] == "SID" && i > 0 {
-			jsonData := ReturnData{str_split[0], instance}
-			tmpData = append(tmpData, jsonData)
-
+				tmpUserData[i].username = splitInstance[1]
+				tmpUserData[i].id = splitInstance[2]
+				// fmt.Printf("Username: %v\nSID: %v\n", splitInstance[1], splitInstance[2])
+			}
 		}
 	}
-	return (tmpData)
+	return (tmpUserData)
+	// str_split := strings.Split(raw_output, "\r\n")
+	// var tmpData []ReturnData
+	// fmt.Println(str_split)
+	// for i, instance := range str_split {
+	// 	str_split[i] = strings.Trim(string(str_split[i]), " \r\t")
+	// 	fmt.Println(str_split[i])
+
+	// 	if str_split[i] != "" && str_split[0] == "Name" && i > 0 {
+	// 		jsonData := ReturnData{str_split[0], instance}
+	// 		tmpData = append(tmpData, jsonData)
+
+	// 	} else if str_split[i] != "" && str_split[0] == "SID" && i > 0 {
+	// 		jsonData := ReturnData{str_split[0], instance}
+	// 		tmpData = append(tmpData, jsonData)
+
+	// 	}
+	// }
 }
 func Apps(raw_output string) string {
 	fmt.Println("9")
