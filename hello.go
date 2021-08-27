@@ -21,9 +21,33 @@ type UserStruct struct {
 	id       string
 }
 
+type AppsStruct struct {
+	installDate string
+	location    string
+	name        string
+	publisher   string
+	version     string
+}
+
+type SvcStruct struct {
+	displayName string
+	name        string
+	path        string
+}
+
+type PatchesStruct struct {
+	caption     string
+	description string
+	installDate string
+	hotfixId    string
+}
+
 func main() {
 	// cmdb := CMDB{}
 	userList := []UserStruct{}
+	appsList := []AppsStruct{}
+	svcList := []SvcStruct{}
+	patchesList := []PatchesStruct{}
 	var cmdList = []winCmds{
 		// {
 		// 	name:     "SystemInfo",
@@ -46,28 +70,25 @@ func main() {
 		// 	cmd:      "netsh interface ip show address",
 		// },
 		// {
-		// 	name:     "MAC",
-		// 	funcName: MAC,
-		// 	cmd:      "wmic nic",
+		// 	name: "Startup",
+		// 	cmd:  "wmic startup get location,name /format:csv",
 		// },
 		{
 			name: "Users",
 			cmd:  "wmic useraccount get name,sid /format:csv",
 		},
-		// {
-		// 	name: "Users",
-		// 	cmd:  "wmic useraccount get sid",
-		// },
-		// {
-		// 	name:     "Apps",
-		// 	funcName: Apps,
-		// 	cmd:      "wmic product",
-		// },
-		// {
-		// 	name:     "Services",
-		// 	funcName: Services,
-		// 	cmd:      "wmic service",
-		// },
+		{
+			name: "Patches",
+			cmd:  "wmic qfe get hotfixid,description,installdate,caption /format:csv",
+		},
+		{
+			name: "Apps",
+			cmd:  "wmic product get name,version,vendor,installdate,installlocation /format:csv",
+		},
+		{
+			name: "Services",
+			cmd:  "wmic service get displayname, name, pathname /format:csv",
+		},
 	}
 
 	for i := 0; i < len(cmdList); i++ {
@@ -76,10 +97,20 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		switch cmdList[i].name {
 		case "Users":
 			userList = Users(string(output))
 			fmt.Printf("%+q\r\n", userList)
+		case "Apps":
+			appsList = Apps(string(output))
+			fmt.Printf("%+q\r\n", appsList)
+		case "Services":
+			svcList = Services(string(output))
+			fmt.Printf("%+q\r\n", svcList)
+		case "Patches":
+			patchesList = Patches(string(output))
+			fmt.Printf("%+q\r\n", patchesList)
 		}
 	}
 }
@@ -93,25 +124,94 @@ func Users(rawOutput string) []UserStruct {
 	tmpUserData := make([]UserStruct, len(strSplit))
 
 	for i, instance := range strSplit {
+		fmt.Println(i)
 		if i != 0 {
 			if instance != "" {
+				instance = strings.Trim(instance, "\r\n ")
 				splitInstance := strings.Split(instance, ",")
 
-				if splitInstance[1] != "Name" {
+				if splitInstance[1] != "Name" && splitInstance[1] != "" {
 					tmpUserData[i].username = splitInstance[1]
 					tmpUserData[i].id = splitInstance[2]
 				}
-				// fmt.Printf("Username: %v\nSID: %v\n", splitInstance[1], splitInstance[2])
+				// The above if excludes the "Name" line but still creates an empty "" in username
+				// The below if removes that element from the slice
+				// if tmpUserData[i].username == "" {
+				// 	fmt.Println("test")
+				// 	tmpUserData = append(tmpUserData[:i], tmpUserData[i+1:]...)
+				// 	i--
+				// 	continue
+				// }
+				// fmt.Printf("Username: %v\nSID: %v\n", tmpUserData[i].username, tmpUserData[i].id)
 			}
 		}
 	}
 	return (tmpUserData)
 }
-func Apps(raw_output string) string {
-	fmt.Println("9")
-	return (raw_output)
+func Apps(rawOutput string) []AppsStruct {
+	strSplit := strings.Split(rawOutput, "\r\n")
+	tmpAppsData := make([]AppsStruct, len(strSplit))
+
+	for i, instance := range strSplit {
+		fmt.Println(instance)
+		if i != 0 {
+			if instance != "" {
+				instance = strings.Trim(instance, "\r\n ")
+				splitInstance := strings.Split(instance, ",")
+
+				if splitInstance[1] != "InstallDate" {
+					tmpAppsData[i].installDate = splitInstance[1]
+					tmpAppsData[i].location = splitInstance[2]
+					tmpAppsData[i].name = splitInstance[3]
+					tmpAppsData[i].publisher = splitInstance[4]
+					tmpAppsData[i].version = splitInstance[5]
+				}
+			}
+		}
+	}
+	return (tmpAppsData)
 }
-func Services(raw_output string) string {
-	fmt.Println("10")
-	return (raw_output)
+func Services(rawOutput string) []SvcStruct {
+	strSplit := strings.Split(rawOutput, "\r\n")
+	tmpSvcData := make([]SvcStruct, len(strSplit))
+
+	for i, instance := range strSplit {
+		fmt.Println(instance)
+		if i != 0 {
+			if instance != "" {
+				instance = strings.Trim(instance, "\r\n ")
+				splitInstance := strings.Split(instance, ",")
+
+				if splitInstance[1] != "InstallDate" {
+					tmpSvcData[i].displayName = splitInstance[1]
+					tmpSvcData[i].name = splitInstance[2]
+					tmpSvcData[i].path = splitInstance[3]
+				}
+			}
+		}
+	}
+	return (tmpSvcData)
+}
+
+func Patches(rawOutput string) []PatchesStruct {
+	strSplit := strings.Split(rawOutput, "\r\n")
+	tmpPatchesData := make([]PatchesStruct, len(strSplit))
+
+	for i, instance := range strSplit {
+		fmt.Println(instance)
+		if i != 0 {
+			if instance != "" {
+				instance = strings.Trim(instance, "\r\n ")
+				splitInstance := strings.Split(instance, ",")
+
+				if splitInstance[1] != "InstallDate" {
+					tmpPatchesData[i].caption = splitInstance[1]
+					tmpPatchesData[i].description = splitInstance[2]
+					tmpPatchesData[i].hotfixId = splitInstance[3]
+					tmpPatchesData[i].installDate = splitInstance[4]
+				}
+			}
+		}
+	}
+	return (tmpPatchesData)
 }
